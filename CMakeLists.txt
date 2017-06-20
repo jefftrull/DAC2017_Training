@@ -5,6 +5,7 @@ set( CMAKE_CXX_STANDARD 14 )
 add_executable( member_fn member_function_qualifiers.cpp )
 add_library( smart_ptrs smart_pointers.cpp )
 add_executable( alg_examples alg_examples.cpp )
+add_executable( generic generic_programming.cpp )
 
 if( GBENCH_ROOT )
   # assuming you built gbench in a "build" directory but have not installed it:
