@@ -16,50 +16,47 @@ qs_comparator( void const * a, void const * b ) {
     return *reinterpret_cast<int const *>(b) - *reinterpret_cast<int const *>(a);
 }
 
-void BM_qsort(benchmark::State & state) {
+void qs_sorter( std::vector<int> v ) {
+    qsort(v.data(), v.size(), sizeof(int), qs_comparator);
+    benchmark::DoNotOptimize(v);
+}
+
+auto std_comparator = [](int a, int b) { return b < a; };  // reversed
+
+void std_sorter( std::vector<int> v ) {
+    sort(v.begin(), v.end(), std_comparator);
+    benchmark::DoNotOptimize(v);
+}
+
+template<typename Sorter>
+void BM_sort(Sorter s, benchmark::State & state) {
     using namespace std;
     const size_t testsize = state.range(0);
 
     random_device rnd_device;
     mt19937 mersenne_engine(rnd_device());
     uniform_int_distribution<int> dist;
-    // construct random vector of (TODO) supplied size
+
+    // construct random vector of supplied size
     vector<int> rands(testsize);
     generate_n(rands.begin(),
-                    testsize,
-                    [&](){ return dist(mersenne_engine); });
-    vector<int> test(testsize);    // scratch memory for sort
-    while (state.KeepRunning()) {
-        // overwrite scratch memory with unsorted data
-        copy(rands.begin(), rands.end(), test.begin());
-        qsort(test.data(), testsize, sizeof(int), qs_comparator);
+               testsize,
+               [&](){ return dist(mersenne_engine); });
 
-        benchmark::DoNotOptimize(test);
+    while (state.KeepRunning()) {
+        s(rands);
     }
+}
+
+void BM_qsort(benchmark::State & state) {
+    BM_sort(qs_sorter, state);
+}
+
+void BM_stdsort(benchmark::State & state) {
+    BM_sort(std_sorter, state);
 }
 
 BENCHMARK(BM_qsort)->Arg(10000);
-
-void BM_stdsort(benchmark::State & state) {
-    using namespace std;
-    const size_t testsize = state.range(0);
-
-    random_device rnd_device;
-    mt19937 mersenne_engine(rnd_device());
-    uniform_int_distribution<int> dist;
-    vector<int> rands(testsize);
-    generate_n(rands.begin(),
-                    testsize,
-                    [&](){ return dist(mersenne_engine); });
-    auto cmpfn = [](int a, int b) { return b < a; };  // reversed
-    vector<int> test(testsize);
-    while (state.KeepRunning()) {
-        copy(rands.begin(), rands.end(), test.begin());
-        sort(test.begin(), test.end(), cmpfn);
-
-        benchmark::DoNotOptimize(test);
-    }
-}
 
 BENCHMARK(BM_stdsort)->Arg(10000);
 
