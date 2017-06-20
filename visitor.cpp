@@ -7,7 +7,7 @@ void DoNothingC(Instance *) {}
 
 void
 traverse_netlist_c(Netlist * n,
-                   void (*v)(Instance *)) {
+                   void (*v)(Instance *) = DoNothingC) {
     // ...
     // every time we encounter an instance, call the visitor
     Instance * inst;
