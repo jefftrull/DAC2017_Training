@@ -14,10 +14,10 @@ public:
 
     // const-qualified member functions return const versions
     const_it begin() const {
-        return item_storage.begin();   // TODO: or cbegin?
+        return item_storage.cbegin();
     }
     const_it end() const {
-        return item_storage.end();
+        return item_storage.cend();
     }
     container_t const & contents() const & {
         return item_storage;
