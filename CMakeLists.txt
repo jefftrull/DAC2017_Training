@@ -1,6 +1,11 @@
 cmake_minimum_required( VERSION 3.5 )
 
 set( CMAKE_CXX_STANDARD 14 )
+set( CMAKE_CXX_FLAGS_DEBUG "-g -Og -fno-omit-frame-pointer" )
+
+if( CMAKE_BUILD_TYPE STREQUAL "" )
+  set( CMAKE_BUILD_TYPE Release CACHE STRING "Build type (Release, Debug, RelWithDebInfo, MinSizeRel)" FORCE )
+endif()
 
 add_executable( member_fn member_function_qualifiers.cpp )
 add_library( smart_ptrs smart_pointers.cpp )
