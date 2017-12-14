@@ -43,7 +43,7 @@ void BM_sort(Sorter s, benchmark::State & state) {
                testsize,
                [&](){ return dist(mersenne_engine); });
 
-    while (state.KeepRunning()) {
+    for (auto _ : state) {
         s(rands);
     }
 }
